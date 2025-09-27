@@ -7,6 +7,7 @@ from openpyxl import load_workbook
 from dotenv import load_dotenv
 import os
 
+#변수 선언
 load_dotenv()
 
 bot = commands.Bot(command_prefix="/", intents=nextcord.Intents.all())
@@ -19,10 +20,12 @@ Pcolum = ["A","B","C","D","E","F","G","H","I","J"]
 GM_role = 1421049224321044480
 Sid = 1360509644442697849
 
+#본 온라인 확인
 @bot.event
 async def on_ready():
     print(f'준비완료 {bot.user}')
 
+#플레이어를 데이터에 추가 및 기초 스텟 설정
 @bot.slash_command(guild_ids=[Sid], name="플레이어추가", description="플레이어를 추가합니다")
 async def slash2(ctx:nextcord.Interaction, 사용자명: nextcord.Member=nextcord.SlashOption(description="추가할 유저의이름을 선택해주세요."), 최대hp: int=nextcord.SlashOption(description="플레이어의 최대HP를 적어주세요."), 최대정신력: int=nextcord.SlashOption(description="플레이어의 최대정신력을 적어주세요.")):
     global IDNum
@@ -63,6 +66,7 @@ async def slash2(ctx:nextcord.Interaction, 사용자명: nextcord.Member=nextcor
 
     excel.save(dir)
 
+#특정 플레이어의 HP를 변경
 @bot.slash_command(guild_ids=[Sid], name="hp", description="HP를 변경합니다.")
 async def slash2(ctx:nextcord.Interaction, 사용자명: nextcord.Member=nextcord.SlashOption(description="변경할 플레이어를 골라주세요."), 값: int=nextcord.SlashOption(description="변경할 값을 적어주세요.")):
     global dir
@@ -106,6 +110,7 @@ async def slash2(ctx:nextcord.Interaction, 사용자명: nextcord.Member=nextcor
             await ctx.send('GM 권한이 없습니다.',ephemeral=True)
     excel.save(dir)
 
+#특정 플레이어의 MP를 변경
 @bot.slash_command(guild_ids=[Sid], name="mp", description="MP를 변경합니다.")
 async def slash2(ctx:nextcord.Interaction, 사용자명: nextcord.Member=nextcord.SlashOption(description="변경할 플레이어의 번호를 적어주세요."), 값: int=nextcord.SlashOption(description="변경할 값을 적어주세요.")):
     global IDNum
@@ -133,6 +138,7 @@ async def slash2(ctx:nextcord.Interaction, 사용자명: nextcord.Member=nextcor
             await ctx.send('GM 권한이 없습니다.',ephemeral=True)
     excel.save(dir)
 
+#특정 플레이어의 SP를 변경
 @bot.slash_command(guild_ids=[Sid], name="sp", description="정신력을 변경합니다.")
 async def slash2(ctx:nextcord.Interaction, 사용자명: nextcord.Member=nextcord.SlashOption(description="변경할 플레이어의 번호를 적어주세요."), 값: int=nextcord.SlashOption(description="변경할 값을 적어주세요.")):
     global IDNum
@@ -173,8 +179,10 @@ async def slash2(ctx:nextcord.Interaction, 사용자명: nextcord.Member=nextcor
             await ctx.send('GM 권한이 없습니다.',ephemeral=True)
     excel.save(dir)
 
+#모든 플레이어의 HP를 변경
 @bot.slash_command(guild_ids=[Sid], name="ahp", description="전체 플레이어의 HP를 변경합니다.")
 async def slash2(ctx:nextcord.Interaction, 값: int=nextcord.SlashOption(description="변경할 값을 적어주세요.")):
+
     global dir
     global GM_role
     global Sid
@@ -198,13 +206,14 @@ async def slash2(ctx:nextcord.Interaction, 값: int=nextcord.SlashOption(descrip
                 excel_ws[f'D{i}'].value = cal
     else:   
         await ctx.send('GM 권한이 없습니다.',ephemeral=True)
-        
+
     if 값 < 0: 
         await ctx.channel.send(f"**``모두의 체력이 '{값 * -1}' 만큼 감소했습니다.``**")
     else:
         await ctx.channel.send(f"**``모두의 체력이 '{값}' 만큼 증가했습니다.``**")
     excel.save(dir)
-    
+
+#모든 플레이어의 MP를 변경   
 @bot.slash_command(guild_ids=[Sid], name="amp", description="전체 플레이어의 MP를 변경합니다.")
 async def slash2(ctx:nextcord.Interaction, 값: int=nextcord.SlashOption(description="변경할 값을 적어주세요.")):
     global dir
@@ -230,6 +239,7 @@ async def slash2(ctx:nextcord.Interaction, 값: int=nextcord.SlashOption(descrip
         await ctx.channel.send(f"**``모두의 토큰이 '{값}' 만큼 증가했습니다.``**")
     excel.save(dir)
 
+#모든 플레이어의 SP를 변경
 @bot.slash_command(guild_ids=[Sid], name="asp", description="전체 플레이어의 SP를 변경합니다.")
 async def slash2(ctx:nextcord.Interaction, 값: int=nextcord.SlashOption(description="변경할 값을 적어주세요.")):
     global dir
@@ -256,6 +266,7 @@ async def slash2(ctx:nextcord.Interaction, 값: int=nextcord.SlashOption(descrip
         await ctx.channel.send(f"**``모두의 정신력이 '{값}' 만큼 증가했습니다.``**")
     excel.save(dir)
 
+#모든 플레이어의 정보를 출력
 @bot.slash_command(guild_ids=[Sid], name="플레이어정보", description="플레이어들의 정보를 보여줍니다.")
 async def slash(ctx:nextcord.Interaction):
     global IDNum
@@ -361,6 +372,7 @@ async def slash(ctx:nextcord.Interaction):
     await ctx.send(embed=embed,ephemeral=True)
     excel.save(dir)
 
+#데이터의 모든 값을 초기화
 @bot.slash_command(guild_ids=[1360509644442697849], name="초기화", description="플레이어들의 정보를 초기화합니다.")
 async def slash2(ctx:nextcord.Interaction):
     global IDNum
@@ -481,6 +493,7 @@ async def slash2(ctx:nextcord.Interaction):
     
     await ctx.send(embed=embed,ephemeral=True)
 
+#전투를 종료하고 스텟을 초기화
 @bot.slash_command(guild_ids=[Sid], name="전투종료",description="전투를 종료합니다.")
 async def slash2(ctx:nextcord.Interaction):
     global IDNum
@@ -499,11 +512,13 @@ async def slash2(ctx:nextcord.Interaction):
     await ctx.send(f'전투를 종료하고 데이터를 초기화했습니다.',ephemeral=True)
     await ctx.channel.send(f'전투를 종료했습니다.')
 
+#최댓값을 정한뒤 주사위 굴리기
 @bot.slash_command(guild_ids=[1360509644442697849], name="roll", description="게임 진행에 필요한 주사위굴리기를 실행합니다 최대 값을 지정할수있습니다.")
 async def slash2(ctx:nextcord.Interaction, 최대값: int=nextcord.SlashOption(description="주사위의 최대값을 적어주십시오 최소값은 1입니다.")):
     V = random.randint(1,최대값)
     await ctx.send(f'## 『{V}』')
-        
+
+#슬레시 없이 메세지를 보내는것으로 작동하는 스킬같은 명령어들        
 @bot.event
 async def on_message(msg:nextcord.Message):
     if msg.author.bot:
@@ -548,4 +563,5 @@ async def on_message(msg:nextcord.Message):
             else:
                 await msg.channel.send(f'**``《 {cell} 》``**{" <:To:1360529966357549252>"* int(mp or 0)}\n**``『체력』 ({hp}/{Mhp})``**\n**``『정신력』 ({s}/{Ms})``**')
 
+#봇의 토큰
 bot.run(TOKEN)       
