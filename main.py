@@ -54,13 +54,11 @@ async def slash2(ctx:nextcord.Interaction, 사용자명: nextcord.Member=nextcor
             excel_ws[f'D{IDNum + 1}'] = 최대hp
             excel_ws[f'E{IDNum + 1}'] = 최대정신력
             excel_ws[f'F{IDNum + 1}'] = 최대정신력
-            excel_ws[f'G{IDNum + 1}'] = False
             excel_ws[f'B{1}'] = "MP"
             excel_ws[f'C{1}'] = "최대HP"
             excel_ws[f'D{1}'] = "현재HP"
             excel_ws[f'E{1}'] = "최대정신력"
             excel_ws[f'F{1}'] = "현재정신력"
-            excel_ws[f'G{1}'] = "isDEAD"
             await ctx.response.send_message(f'{PN}님이 플레이어로 추가 되었습니다.',ephemeral=True)
             IDNum += 1
 
@@ -88,24 +86,18 @@ async def slash2(ctx:nextcord.Interaction, 사용자명: nextcord.Member=nextcor
         if GM_role in role_ids:
             cal = (excel_ws[f'D{count}'].value or 0) + 값
             Mhp = excel_ws[f'C{count}'].value or 0
-            isDEAD = excel_ws[f'G{count}'].value
-            if isDEAD == True:
-                await ctx.send(f'{excel_ws.cell(row=count, column=1).value}님은 행동 불능상태입니다.',ephemeral=True)
+            if cal > Mhp:
+                await ctx.send(f'최대hp보다 커질수 없습니다.',ephemeral=True)
             else:
-                if cal > Mhp:
-                    await ctx.send(f'최대hp보다 커질수 없습니다.',ephemeral=True)
+                if cal <= 0:
+                    excel_ws[f'D{count}'].value = 0
                 else:
-                    if cal <= 0:
-                        excel_ws[f'G{count}'].value = True
-                        await ctx.channel.send(f'**``《 {excel_ws.cell(row=count, column=1).value} 》님이 쓰러졌습니다.``**')
-                        excel_ws[f'D{count}'].value = 0
+                    excel_ws[f'D{count}'].value = cal
+                    await ctx.send(f'{excel_ws.cell(row=count, column=1).value}님의 HP값이 {excel_ws.cell(row=count, column=4).value}으로 변경되었습니다.',ephemeral=True)
+                    if 값 < 0: 
+                        await ctx.channel.send(f"**``{excel_ws.cell(row=count, column=1).value}님의 체력이 '{값 * -1}' 만큼 감소했습니다.``**")
                     else:
-                        excel_ws[f'D{count}'].value = cal
-                        await ctx.send(f'{excel_ws.cell(row=count, column=1).value}님의 HP값이 {excel_ws.cell(row=count, column=4).value}으로 변경되었습니다.',ephemeral=True)
-                        if 값 < 0: 
-                            await ctx.channel.send(f"**``{excel_ws.cell(row=count, column=1).value}님의 체력이 '{값 * -1}' 만큼 감소했습니다.``**")
-                        else:
-                            await ctx.channel.send(f"**``{excel_ws.cell(row=count, column=1).value}님의 체력이 '{값}' 만큼 증가했습니다.``**")
+                        await ctx.channel.send(f"**``{excel_ws.cell(row=count, column=1).value}님의 체력이 '{값}' 만큼 증가했습니다.``**")
         else:
             await ctx.send('GM 권한이 없습니다.',ephemeral=True)
     excel.save(dir)
@@ -199,9 +191,7 @@ async def slash2(ctx:nextcord.Interaction, 값: int=nextcord.SlashOption(descrip
                 excel_ws[f'D{i}'].value = Mhp
             elif cal <= 0:
                 if excel_ws[f'A{i}'].value != None:
-                    excel_ws[f'G{i}'].value = True
                     excel_ws[f'D{i}'].value = 0
-                    await ctx.channel.send(f'**``《 {excel_ws.cell(row=i, column=1).value} 》님이 쓰러졌습니다.``**')
             else:
                 excel_ws[f'D{i}'].value = cal
     else:   
@@ -507,7 +497,6 @@ async def slash2(ctx:nextcord.Interaction):
         excel_ws[f'B{i}'] = 1
         excel_ws[f'D{i}'] = excel_ws[f'C{i}'].value
         excel_ws[f'F{i}'] = excel_ws[f'E{i}'].value
-        excel_ws[f'G{i}'] = False
     excel.save(dir)
     await ctx.send(f'전투를 종료하고 데이터를 초기화했습니다.',ephemeral=True)
     await ctx.channel.send(f'전투를 종료했습니다.')
@@ -558,10 +547,7 @@ async def on_message(msg:nextcord.Message):
             Ms = excel_ws.cell(row=column,column=5).value
             s = excel_ws.cell(row=column,column=6).value
             mp = excel_ws.cell(row=column,column=2).value
-            if isDEAD == True:
-                await msg.channel.send(f'**``《 {cell} 》``** **``『행동 불능』``**{" <:To:1360529966357549252>"* int(mp or 0)}\n**``『체력』 ({hp}/{Mhp})``**\n**``『정신력』 ({s}/{Ms})``**')
-            else:
-                await msg.channel.send(f'**``《 {cell} 》``**{" <:To:1360529966357549252>"* int(mp or 0)}\n**``『체력』 ({hp}/{Mhp})``**\n**``『정신력』 ({s}/{Ms})``**')
+            await msg.channel.send(f'**``《 {cell} 》``**{" <:To:1360529966357549252>"* int(mp or 0)}\n**``『체력』 ({hp}/{Mhp})``**\n**``『정신력』 ({s}/{Ms})``**')
 
 #봇의 토큰
 bot.run(TOKEN)       
