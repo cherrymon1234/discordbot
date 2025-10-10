@@ -541,13 +541,24 @@ async def on_message(msg:nextcord.Message):
         if count == 0:
             await msg.channel.send("등록되지 않은 플레이어입니다.")
         else:
-            isDEAD = excel_ws.cell(row=column,column=7).value
             Mhp = excel_ws.cell(row=column,column=3).value
             hp = excel_ws.cell(row=column,column=4).value
             Ms = excel_ws.cell(row=column,column=5).value
             s = excel_ws.cell(row=column,column=6).value
             mp = excel_ws.cell(row=column,column=2).value
             await msg.channel.send(f'**``《 {cell} 》``**{" <:To:1360529966357549252>"* int(mp or 0)}\n**``『체력』 ({hp}/{Mhp})``**\n**``『정신력』 ({s}/{Ms})``**')
+
+    elif msg.content == "운명의 닻":
+        MsgList = ["죽음의 파도가 덮쳐올 때, 너의 의지가 운명의 닻을 내린다.",
+                   "절망적인 상황에서도 포기하지 않는 자, 그에게 운명의 닻이 힘을 부여할 것이다.",
+                   "죽음의 순간, 운명의 닻이 죽음이라는 시련에 단단히 박힌다. 그러나, 닻의 쇠사슬은 닳는다.",
+                    "죽음을 피할 때마다 닻의 무게가 가벼워지며, 언젠가 완전히 떠내려갈 순간이 찾아온다.",
+                    "삶과 죽음의 경계에서, 운명의 닻을 내려라!",
+                    "이것은 죽음에 맞서는 최후의 저항이다.",
+        ] # ""뒤에 , 붙힌뒤 "넣을 내용"
+        Mmsg = len(MsgList) # 메세지의 총 개수
+        Mcount = random.randrange(1,Mmsg)
+        await msg.channel.send(f'{MsgList[Mcount]}')
 
 #봇의 토큰
 bot.run(TOKEN)       
